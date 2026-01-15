@@ -298,10 +298,24 @@
     <!-- Toast 提示 -->
     <div id="toast" class="toast"></div>
 
+    <!-- 全局加载遮罩 -->
+    <div id="loading-overlay" class="modal" style="background: rgba(255,255,255,0.8); z-index: 9999;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+            <div class="loading" style="width: 40px; height: 40px; border-width: 4px;"></div>
+            <p style="font-weight: 600; color: var(--primary-color);">同步数据中...</p>
+        </div>
+    </div>
+
     <!-- 引入 Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+    <!-- 引入 Firebase SDK (使用兼容模式以简化迁移) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <!-- 引入应用脚本 -->
+    <script src="js/firebase-config.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/expense.js"></script>
