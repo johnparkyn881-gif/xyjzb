@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园记账本 - 大学生专属记账工具</title>
+    <meta name="description" content="专为大学生设计的简洁记账工具，轻松管理生活费，养成理财好习惯">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- 登录/注册页面 -->
+    <div id="auth-page" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="logo">💰 校园记账本</h1>
+                <p class="tagline">大学生的理财好帮手</p>
+            </div>
+
+            <!-- 登录表单 -->
+            <div id="login-form" class="auth-form active">
+                <h2>欢迎回来</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="login-username">用户名</label>
+                        <input type="text" id="login-username" placeholder="请输入用户名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">密码</label>
+                        <input type="password" id="login-password" placeholder="请输入密码" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">登录</button>
+                </form>
+                <p class="auth-switch">
+                    还没有账号？<a href="#" id="show-register">立即注册</a>
+                </p>
+            </div>
+
+            <!-- 注册表单 -->
+            <div id="register-form" class="auth-form">
+                <h2>创建账号</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="register-username">用户名</label>
+                        <input type="text" id="register-username" placeholder="请输入用户名（3-20个字符）" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">密码</label>
+                        <input type="password" id="register-password" placeholder="请输入密码（至少6个字符）" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">确认密码</label>
+                        <input type="password" id="register-confirm" placeholder="请再次输入密码" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">注册</button>
+                </form>
+                <p class="auth-switch">
+                    已有账号？<a href="#" id="show-login">立即登录</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主应用页面 -->
+    <div id="app-page" class="app-container" style="display: none;">
+        <!-- 顶部导航栏 -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-logo">💰 校园记账本</h1>
+                <div class="header-actions">
+                    <span class="username" id="current-username"></span>
+                    <button class="btn btn-secondary btn-sm" id="logout-btn">退出</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="app-main">
+            <!-- 侧边导航 -->
+            <nav class="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item active" data-page="dashboard">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">数据概览</span>
+                    </li>
+                    <li class="nav-item" data-page="expenses">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">账单管理</span>
+                    </li>
+                    <li class="nav-item" data-page="statistics">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">统计分析</span>
+                    </li>
+                    <li class="nav-item" data-page="settings">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-text">设置</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- 内容区域 -->
+            <div class="content-area">
+                <!-- 数据概览页 -->
+                <div id="dashboard-page" class="page-content active">
+                    <div class="page-header">
+                        <h2>数据概览</h2>
+                        <button class="btn btn-primary" id="add-expense-btn">+ 记一笔</button>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card income">
+                            <div class="stat-icon">💵</div>
+                            <div class="stat-info">
+                                <p class="stat-label">本月收入</p>
+                                <p class="stat-value" id="total-income">¥0.00</p>
+                            </div>
+                        </div>
+                        <div class="stat-card expense">
+                            <div class="stat-icon">💸</div>
+                            <div class="stat-info">
+                                <p class="stat-label">本月支出</p>
+                                <p class="stat-value" id="total-expense">¥0.00</p>
+                            </div>
+                        </div>
+                        <div class="stat-card balance">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <p class="stat-label">本月结余</p>
+                                <p class="stat-value" id="total-balance">¥0.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-charts">
+                        <div class="chart-card">
+                            <h3>支出趋势</h3>
+                            <canvas id="trend-chart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>支出分类</h3>
+                            <canvas id="category-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="recent-transactions">
+                        <h3>最近交易</h3>
+                        <div id="recent-list"></div>
+                    </div>
+                </div>
+
+                <!-- 账单管理页 -->
+                <div id="expenses-page" class="page-content">
+                    <div class="page-header">
+                        <h2>账单管理</h2>
+                        <button class="btn btn-primary" id="add-expense-btn-2">+ 记一笔</button>
+                    </div>
+
+                    <div class="filter-bar">
+                        <select id="filter-type" class="filter-select">
+                            <option value="all">全部类型</option>
+                            <option value="expense">支出</option>
+                            <option value="income">收入</option>
+                        </select>
+                        <select id="filter-category" class="filter-select">
+                            <option value="all">全部分类</option>
+                        </select>
+                        <input type="month" id="filter-month" class="filter-select">
+                    </div>
+
+                    <div class="expense-list" id="expense-list"></div>
+                </div>
+
+                <!-- 统计分析页 -->
+                <div id="statistics-page" class="page-content">
+                    <div class="page-header">
+                        <h2>统计分析</h2>
+                        <div class="time-selector">
+                            <button class="time-btn active" data-period="week">本周</button>
+                            <button class="time-btn" data-period="month">本月</button>
+                            <button class="time-btn" data-period="year">本年</button>
+                        </div>
+                    </div>
+
+                    <div class="stats-summary">
+                        <div class="summary-card">
+                            <h4>总收入</h4>
+                            <p class="summary-value income" id="stats-income">¥0.00</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>总支出</h4>
+                            <p class="summary-value expense" id="stats-expense">¥0.00</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>日均支出</h4>
+                            <p class="summary-value" id="stats-daily">¥0.00</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-charts">
+                        <div class="chart-card full-width">
+                            <h3>每日支出趋势</h3>
+                            <canvas id="daily-trend-chart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>分类占比</h3>
+                            <canvas id="category-pie-chart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>分类对比</h3>
+                            <canvas id="category-bar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设置页 -->
+                <div id="settings-page" class="page-content">
+                    <div class="page-header">
+                        <h2>设置</h2>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>外观设置</h3>
+                        <div class="setting-item">
+                            <label for="theme-toggle">深色模式</label>
+                            <label class="switch">
+                                <input type="checkbox" id="theme-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>数据管理</h3>
+                        <button class="btn btn-secondary" id="export-data-btn">导出数据</button>
+                        <button class="btn btn-secondary" id="import-data-btn">导入数据</button>
+                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>分类管理</h3>
+                        <div id="category-manager"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 添加/编辑账单弹窗 -->
+    <div id="expense-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">记一笔</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="expense-form">
+                <div class="form-row">
+                    <div class="type-selector">
+                        <button type="button" class="type-btn active" data-type="expense">支出</button>
+                        <button type="button" class="type-btn" data-type="income">收入</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="expense-amount">金额</label>
+                    <input type="number" id="expense-amount" placeholder="0.00" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="expense-category">分类</label>
+                    <div class="category-grid" id="category-grid"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="expense-date">日期</label>
+                    <input type="date" id="expense-date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="expense-note">备注</label>
+                    <textarea id="expense-note" placeholder="添加备注（可选）" rows="3"></textarea>
+                </div>
+
+                <input type="hidden" id="expense-id">
+                <input type="hidden" id="expense-type" value="expense">
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div id="toast" class="toast"></div>
+
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- 引入应用脚本 -->
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/expense.js"></script>
+    <script src="js/statistics.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
