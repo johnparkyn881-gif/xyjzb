@@ -23,7 +23,8 @@ const Auth = {
         }
 
         // 修改为邮箱格式以适配 Firebase
-        const email = `${username}@xyjzb.com`;
+        // 统一转换为小写
+        const email = `${username.toLowerCase()}@xyjzb.com`;
 
         try {
             console.log(`Attempting to register user: ${username} (${email})`);
@@ -32,8 +33,8 @@ const Auth = {
 
             // 在 Firestore 中存储额外信息
             await window.fbDb.collection('users').doc(user.uid).set({
-                username: username,
-                email: email, // 存储完整 email 以备查
+                username: username, // 显示名称保留原样
+                email: email,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
@@ -42,7 +43,7 @@ const Auth = {
         } catch (error) {
             console.error('Registration error details:', error);
             let msg = '注册失败，请稍后重试';
-            
+
             // 详细错误映射
             switch (error.code) {
                 case 'auth/email-already-in-use':
@@ -66,16 +67,44 @@ const Auth = {
     },
 
     // 登录
+    // 登录
     async login(username, password) {
-        const email = `${username}@xyjzb.com`;
+        if (!username || !password) {
+            return { success: false, message: '请输入用户名和密码' };
+        }
+
+        // 统一转换为小写，避免大小写敏感问题
+        const email = `${username.toLowerCase()}@xyjzb.com`;
+
         try {
             await window.fbAuth.signInWithEmailAndPassword(email, password);
             return { success: true, message: '登录成功' };
         } catch (error) {
             console.error('Login error:', error);
             let msg = '登录失败，请检查用户名和密码';
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                msg = '用户名或密码错误';
+
+            // 详细错误处理
+            switch (error.code) {
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                case 'auth/invalid-credential':
+                    msg = '用户名或密码错误';
+                    break;
+                case 'auth/invalid-email':
+                    msg = '用户名格式不正确';
+                    break;
+                case 'auth/user-disabled':
+                    msg = '该账号已被禁用';
+                    break;
+                case 'auth/too-many-requests':
+                    msg = '尝试登录次数过多，请稍后再试';
+                    break;
+                case 'auth/network-request-failed':
+                    msg = '网络连接失败，请检查网络设置';
+                    break;
+                default:
+                    // 对于未知错误，显示错误代码以便排查
+                    msg = `登录失败 (${error.code})`;
             }
             return { success: false, message: msg };
         }
