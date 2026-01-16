@@ -59,8 +59,12 @@ function showAuth() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('App initialization started...');
+
     // 监听 Firebase 登录状态
+    console.log('Setting up Auth state listener...');
     window.fbAuth.onAuthStateChanged(user => {
+        console.log('Auth state changed:', user ? 'Logged In' : 'Logged Out');
         if (user) {
             showApp(user);
         } else {
@@ -68,9 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 注册
+    // 注册提交
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('Register form submitted');
         toggleLoading(true);
         const res = await Auth.register(
             document.getElementById('register-username').value.trim(),
@@ -81,9 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleLoading(false);
     });
 
-    // 登录
+    // 登录提交
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('Login form submitted');
         toggleLoading(true);
         const res = await Auth.login(
             document.getElementById('login-username').value.trim(),
@@ -94,6 +100,37 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleLoading(false);
         }
     });
+
+    // 切换登录/注册表单
+    const showRegisterLink = document.getElementById('show-register');
+    const showLoginLink = document.getElementById('show-login');
+    const loginFormDiv = document.getElementById('login-form');
+    const registerFormDiv = document.getElementById('register-form');
+
+    console.log('Elements found:', {
+        showRegisterLink: !!showRegisterLink,
+        showLoginLink: !!showLoginLink,
+        loginFormDiv: !!loginFormDiv,
+        registerFormDiv: !!registerFormDiv
+    });
+
+    if (showRegisterLink && loginFormDiv && registerFormDiv) {
+        showRegisterLink.onclick = (e) => {
+            e.preventDefault();
+            console.log('Switching to register form (via onclick)');
+            loginFormDiv.classList.remove('active');
+            registerFormDiv.classList.add('active');
+        };
+    }
+
+    if (showLoginLink && loginFormDiv && registerFormDiv) {
+        showLoginLink.onclick = (e) => {
+            e.preventDefault();
+            console.log('Switching to login form (via onclick)');
+            registerFormDiv.classList.remove('active');
+            loginFormDiv.classList.add('active');
+        };
+    }
 
     // 登出
     document.getElementById('logout-btn').addEventListener('click', () => Auth.logout());
